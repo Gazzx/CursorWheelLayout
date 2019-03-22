@@ -5,6 +5,8 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 apply plugin: 'kotlin-kapt'
+
+apply plugin: 'com.github.dcendents.android-maven'
 android {
     compileSdkVersion 28
 
@@ -28,3 +30,5 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     implementation 'androidx.annotation:annotation:1.0.0-beta01'
 }
+
+group='com.github.hellocsl'
