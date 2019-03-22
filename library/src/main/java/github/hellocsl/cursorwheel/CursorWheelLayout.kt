@@ -177,6 +177,8 @@ open class CursorWheelLayout : ViewGroup {
 
     private var mImageView: ImageView? = null
 
+    private var mPreSelect = true
+
 
     var itemRotateMode = ITEM_ROTATE_MODE_NONE
         private set
@@ -255,6 +257,7 @@ open class CursorWheelLayout : ViewGroup {
             mGuideLineColor = ta.getColor(R.styleable.CursorWheelLayout_wheelGuideLineColor, DEFAULT_GUIDE_LINE_COLOR)
             itemRotateMode = ta.getInt(R.styleable.CursorWheelLayout_wheelItemRotateMode, ITEM_ROTATE_MODE_NONE)
             mBgRotateMode = ta.getInt(R.styleable.CursorWheelLayout_wheelBgRotateMode, BG_ROTATE_MODE_NONE)
+            mPreSelect = ta.getBoolean(R.styleable.CursorWheelLayout_wheelPreSelect, true)
             ta.recycle()
         }
         init(context)
@@ -487,7 +490,7 @@ open class CursorWheelLayout : ViewGroup {
     }
 
     override fun requestLayout() {
-        mIsFirstLayout = true
+        mIsFirstLayout = mPreSelect
         super.requestLayout()
     }
 

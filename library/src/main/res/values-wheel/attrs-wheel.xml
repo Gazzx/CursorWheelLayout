@@ -21,5 +21,6 @@
         </attr>
         <attr name="wheelGuideLineWidth" format="dimension"/>
         <attr name="wheelGuideLineColor" format="color"/>
+        <attr name="wheelPreSelect" format="boolean"/>
     </declare-styleable>
 </resources>

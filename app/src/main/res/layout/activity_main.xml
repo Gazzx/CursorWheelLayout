@@ -60,7 +60,8 @@
         app:wheelCursorHeight="20dip"
         app:wheelFlingValue="460"
         app:wheelItemRotateMode="inward"
-        app:wheelSelectedAngle="225">
+        app:wheelSelectedAngle="225"
+        app:wheelPreSelect="false">
 
         <github.hellocsl.cursorwheellayout.widget.SwitchButton
             android:id="@id/id_wheel_menu_center_item"

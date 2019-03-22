@@ -55,7 +55,6 @@ public class MainActivity extends AppCompatActivity implements CursorWheelLayout
         mTestCircleMenuRight.setAdapter(simpleTextAdapter2);
         mTestCircleMenuRight.setOnMenuSelectedListener(this);
         mTestCircleMenuRight.setOnMoveListener((parent) -> {
-            Log.e(">>>>>>>>>>",">>>>>>>>>>>>>>>>>>"+parent.getSelectedPosition());
             if(parent.getSelectedPosition() == -1) parent.redrawBackground();
         });
         List<ImageData> imageDatas = new ArrayList<ImageData>();
