@@ -11,10 +11,7 @@ import android.os.Build
 import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.util.Log
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
+import android.view.*
 import android.widget.ImageView
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
@@ -147,6 +144,11 @@ open class CursorWheelLayout : ViewGroup {
      * callback on menu item being selected
      */
     private var mOnMenuSelectedListener: OnMenuSelectedListener? = null
+
+    /**
+     * callback on menu item being selected
+     */
+    private var mOnMoveListener: OnMoveListener? = null
 
 
     private var mIsFirstLayout = true
@@ -361,6 +363,12 @@ open class CursorWheelLayout : ViewGroup {
         mOnMenuItemClickListener: OnMenuItemClickListener
     ) {
         this.mOnMenuItemClickListener = mOnMenuItemClickListener
+    }
+
+    fun setOnMoveListener(
+        onMoveListener: OnMoveListener
+    ) {
+        this.mOnMoveListener = onMoveListener
     }
 
     fun setOnMenuSelectedListener(onMenuSelectedListener: OnMenuSelectedListener) {
@@ -596,6 +604,12 @@ open class CursorWheelLayout : ViewGroup {
                 }
             }
             MotionEvent.ACTION_MOVE -> {
+                mWheelAdapter?.apply {
+                    if (!move) {
+                        move = true
+                    }
+                }
+                mOnMoveListener?.onMove(this)
                 /**
                  * 获得开始的角度
                  */
@@ -735,25 +749,44 @@ open class CursorWheelLayout : ViewGroup {
         generateBackground(adapter)
     }
 
+    fun redrawBackground() {
+        mWheelAdapter?.let { generateBackground(it) }
+    }
+
     fun generateBackground(adapter: CycleWheelAdapter) {
         if (mWheelBg == 0 && mWheelBgColor == 0) {
             post {
-                val tempBitmap = Bitmap.createBitmap(mImageView?.width ?:100, mImageView?.height ?:100, Bitmap.Config.ARGB_8888)
-                val tempCanvas = Canvas(tempBitmap)
-                val gap = (360 / adapter.count).toFloat()
-                val startAngle = ((mSelectedAngle - (gap / 2f) + 360) % 360).toFloat()
-                val paint = Paint()
-                tempCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
-                paint.isAntiAlias = true
-                paint.style = Paint.Style.FILL
-                for (i in 0 until adapter.count) {
-                    paint.color = adapter.getColor(i, selectedPosition)
-                    tempCanvas.drawArc(RectF(0f, 0f, tempCanvas.width.toFloat(),
-                        tempCanvas.height.toFloat()), startAngle + (gap * i), gap, true, paint)
+                if (mImageView?.width ?: 0 > 0) {
+                    generateBackgroundExecute(adapter)
+                } else {
+                    mImageView?.viewTreeObserver?.apply {
+                        this.addOnGlobalLayoutListener(object: ViewTreeObserver.OnGlobalLayoutListener {
+                            override fun onGlobalLayout() {
+                                generateBackgroundExecute(adapter)
+                                removeOnGlobalLayoutListener(this)
+                            }
+                        })
+                    }
                 }
-                mImageView?.setImageDrawable(BitmapDrawable(resources, tempBitmap))
             }
         }
+    }
+
+    open fun generateBackgroundExecute(adapter: CycleWheelAdapter) {
+        val tempBitmap = Bitmap.createBitmap(mImageView?.width ?:100, mImageView?.height ?:100, Bitmap.Config.ARGB_8888)
+        val tempCanvas = Canvas(tempBitmap)
+        val gap = (360 / adapter.count).toFloat()
+        val startAngle = ((mSelectedAngle - (gap / 2f) + 360) % 360).toFloat()
+        val paint = Paint()
+        tempCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+        paint.isAntiAlias = true
+        paint.style = Paint.Style.FILL
+        for (i in 0 until adapter.count) {
+            paint.color = adapter.getColor(i, selectedPosition)
+            tempCanvas.drawArc(RectF(0f, 0f, tempCanvas.width.toFloat(),
+                    tempCanvas.height.toFloat()), startAngle + (gap * i), gap, true, paint)
+        }
+        mImageView?.setImageDrawable(BitmapDrawable(resources, tempBitmap))
     }
 
     private fun onDateSetChanged() {
@@ -1081,6 +1114,16 @@ open class CursorWheelLayout : ViewGroup {
     }
 
     /**
+     * callback when spin
+     *
+     * @author chensuilun
+     */
+    interface OnMoveListener {
+
+        fun onMove(parent: CursorWheelLayout)
+    }
+
+    /**
      * @author chensuilun
      */
     inner class WheelDataSetObserver : DataSetObserver() {
@@ -1101,6 +1144,7 @@ open class CursorWheelLayout : ViewGroup {
     abstract class CycleWheelAdapter {
 
         private val mDataSetObservable = DataSetObservable()
+        var move = false
 
         /**
          * How many menu items are in the data set represented by this Adapter.
