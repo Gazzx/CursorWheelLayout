@@ -861,6 +861,11 @@ open class CursorWheelLayout : ViewGroup {
         }
 
         if (!mNeedSlotIntoCenter) {
+            mWheelAdapter?.apply {
+                if (!move) {
+                    move = true
+                }
+            }
             if (mSelectedView !== mTempSelectedView || selectedPosition != mTempSelectedPosition) {
                 mSelectedView?.let { onInnerItemUnselected(it) }
                 mSelectedView = mTempSelectedView
