@@ -1,7 +1,7 @@
 package github.hellocsl.cursorwheellayout;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -11,7 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import butterknife.Bind;
+import androidx.appcompat.app.AppCompatActivity;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import github.hellocsl.cursorwheel.CursorWheelLayout;
@@ -23,14 +24,14 @@ import github.hellocsl.cursorwheellayout.widget.SimpleTextCursorWheelLayout;
 
 public class MainActivity extends AppCompatActivity implements CursorWheelLayout.OnMenuSelectedListener {
 
-    @Bind(R.id.test_circle_menu_left)
+    @BindView(R.id.test_circle_menu_left)
     SimpleTextCursorWheelLayout mTestCircleMenuLeft;
-    @Bind(R.id.test_circle_menu_right)
+    @BindView(R.id.test_circle_menu_right)
     SimpleTextCursorWheelLayout mTestCircleMenuRight;
-    @Bind(R.id.main_button_random_selected)
+    @BindView(R.id.main_button_random_selected)
     Button mMainButtonRadonSelected;
     Random mRandom = new Random();
-    @Bind(R.id.test_circle_menu_top)
+    @BindView(R.id.test_circle_menu_top)
     CursorWheelLayout mTestCircleMenuTop;
 
     @Override
@@ -53,6 +54,9 @@ public class MainActivity extends AppCompatActivity implements CursorWheelLayout
         SimpleTextAdapter simpleTextAdapter2 = new SimpleTextAdapter(this, menuItemDatas, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
         mTestCircleMenuRight.setAdapter(simpleTextAdapter2);
         mTestCircleMenuRight.setOnMenuSelectedListener(this);
+        mTestCircleMenuRight.setOnMoveListener((parent) -> {
+            if(parent.getSelectedPosition() == -1) parent.redrawBackground();
+        });
         List<ImageData> imageDatas = new ArrayList<ImageData>();
         imageDatas.add(new ImageData(R.drawable.ic_bank_bc, "0"));
         imageDatas.add(new ImageData(R.drawable.ic_bank_china, "1"));

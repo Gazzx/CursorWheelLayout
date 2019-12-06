@@ -44,4 +44,12 @@ public class SimpleImageAdapter extends CursorWheelLayout.CycleWheelAdapter {
         return mMenuItemDatas.get(position);
     }
 
+    @Override
+    public int getColor(int position, int selected) {
+        switch (position) {
+            case 0: return 0xff000000;
+            case 1: return 0xffffffff;
+        }
+        return 0;
+    }
 }
